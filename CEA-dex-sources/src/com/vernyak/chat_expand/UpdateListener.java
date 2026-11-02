@@ -24,6 +24,7 @@ final class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
     }
 
     private void stats(Morph tg) {
+        if (!L.on()) return;
         try {
             double wall = wall0 != null ? (U.now() - wall0) : 0.0;
             tg.plugin.log("stats " + tg.kind() + ": frames=" + frames + " maxdt=" + (int) (maxDt * 1000)

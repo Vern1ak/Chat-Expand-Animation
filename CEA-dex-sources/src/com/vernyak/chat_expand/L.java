@@ -10,7 +10,28 @@ final class L {
 
     private L() {}
 
+    private static volatile boolean cached = true;
+    private static volatile long checkedAt;
+    private static boolean inCheck;
+
+    /** Debug-log switch (plugin setting "debug_log"); re-read at most once a second. */
+    static boolean on() {
+        long now = System.currentTimeMillis();
+        if (now - checkedAt > 1000L && !inCheck) {
+            inCheck = true;
+            try {
+                cached = S.bool("debug_log", true);
+            } catch (Throwable ignored) {
+            } finally {
+                inCheck = false;
+                checkedAt = now;
+            }
+        }
+        return cached;
+    }
+
     static synchronized void emit(String msg) {
+        if (!on()) return;
         try {
             Calendar c = Calendar.getInstance();
             String line = String.format("%02d:%02d:%02d.%03d %s",
@@ -24,6 +45,7 @@ final class L {
 
     /** Log to the ring buffer and to logcat. */
     static void log(String msg) {
+        if (!on()) return;
         emit(msg);
         try {
             android.util.Log.i("chat_expand_animation", msg);

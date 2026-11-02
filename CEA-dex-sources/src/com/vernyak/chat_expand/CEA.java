@@ -14,8 +14,8 @@ public final class CEA {
     private CEA() {}
 
     /** Bump on every release; the updater compares VERSION_CODE numerically. */
-    public static final String VERSION = "1.2.0";
-    public static final int VERSION_CODE = 120;
+    public static final String VERSION = "1.2.3";
+    public static final int VERSION_CODE = 123;
     /** Python-side contract version; the shell refuses a DEX with a different API level. */
     public static final int API = 1;
 

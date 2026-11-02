@@ -19,6 +19,7 @@ final class C {
     static final double HEADER_FLY_P = 1.0;
     static final double MSG_CAPTURE_SIDE_DP = 24.0;
     static final double NAME_TARGET_SHIFT_DP = 57.0;
+    static final double CLASSIC_TITLE_AVATAR_DP = 48.66;
     static final double RAD_BUMP_DP = 26.0;
     static final double RAD_CLOSE_MUL = 1.45;
     static final double GESTURE_RAD_DP = 28.0;

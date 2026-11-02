@@ -621,6 +621,16 @@ final class Controller {
         return -1.0;
     }
 
+    private boolean isMd3Header() {
+        try {
+            Class<?> c = R.cls("com.exteragram.messenger.utils.ui.ChatHeaderUiHelper");
+            if (c == null) return false;
+            return R.bool(R.callStatic(c, "isMaterial3ChatHeaderStyle"), false);
+        } catch (Throwable e) {
+            return false;
+        }
+    }
+
     Morph.Header captureHeader(Object fragment, View container, boolean hide) {
         Object av, tv;
         try {
@@ -634,6 +644,7 @@ final class Controller {
         Morph.Header out = new Morph.Header();
         ArrayList<View> views = new ArrayList<View>();
         ArrayList<Bitmap> bitmaps = new ArrayList<Bitmap>();
+        double[] avatarPos = null;
         try {
             if (av instanceof View && ((View) av).getWidth() > 0 && ((View) av).getHeight() > 0) {
                 View a = (View) av;
@@ -650,6 +661,7 @@ final class Controller {
                     part.anc = new double[]{w / 2.0, h / 2.0};
                     part.ref = (double) w;
                     part.pos = new double[]{pos[0] + w / 2.0, pos[1] + h / 2.0};
+                    avatarPos = pos;
                     out.avatar = part;
                     views.add(a);
                 }
@@ -684,6 +696,13 @@ final class Controller {
                     part.anc = new double[]{tsx, h / 2.0};
                     part.ref = th;
                     part.pos = new double[]{pos[0] + tsx, pos[1] + h / 2.0};
+                    if (avatarPos != null && isMd3Header()) {
+                        double dist = (pos[0] - avatarPos[0]) / density;
+                        double shift = C.NAME_TARGET_SHIFT_DP + (dist - C.CLASSIC_TITLE_AVATAR_DP);
+                        if (shift >= 30.0 && shift <= 100.0) part.shiftDp = shift;
+                        log("md3 header: title-avatar distance " + String.format("%.1f", dist) + "dp, name shift "
+                                + String.format("%.1f", shift) + "dp" + (part.shiftDp > 0.0 ? "" : " (out of range, default used)"));
+                    }
                     out.name = part;
                     views.add(t);
                 }
@@ -893,6 +912,11 @@ final class Controller {
         if (R.bool(param.args[0], false)) return;
         if (!S.bool("enabled", true) || !S.bool("animate_close", true)) return;
         Object layout = param.thisObject;
+        if (!(R.bool(R.get(layout, "predictiveBackInProgress"), false)
+                && R.bool(R.get(layout, "predictiveBackHasProgress"), false))) {
+            log("back finished by a classic edge swipe: native animation kept");
+            return;
+        }
         Object stack = R.call(layout, "getFragmentStack");
         if (!(stack instanceof List)) return;
         List<?> st = (List<?>) stack;

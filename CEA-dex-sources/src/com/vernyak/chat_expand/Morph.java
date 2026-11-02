@@ -39,6 +39,7 @@ final class Morph {
         double[] danc;
         double dref;
         double[] dpos;
+        double shiftDp;
         double[] frame;   // scale, left, top of the last applied frame
     }
 
@@ -56,6 +57,7 @@ final class Morph {
         double[] anc;
         double ref;
         double[] pos;
+        double shiftDp;
     }
 
     static final class Header {
@@ -764,6 +766,7 @@ final class Morph {
                 }
             }
             sp.dpos = dpos;
+            sp.shiftDp = part.shiftDp;
         }
     }
 
@@ -1218,7 +1221,7 @@ final class Morph {
                     double destScale = Math.max(0.25, Math.min(3.0, destRef / sourceRef)) * predictiveScale;
                     double anchorX = ax - x0;
                     double anchorY = ay - y0;
-                    double flightTargetX = destX - C.NAME_TARGET_SHIFT_DP * density * predictiveScale;
+                    double flightTargetX = destX - (sp.shiftDp > 0.0 ? sp.shiftDp : C.NAME_TARGET_SHIFT_DP) * density * predictiveScale;
                     double endX = flightTargetX - anchorX * destScale;
                     double endY = destY - anchorY * destScale + 1.0 * density * predictiveScale;
                     double progress = U.c01(u / Math.max(0.05, C.HEADER_FLY_P));
@@ -1239,7 +1242,7 @@ final class Morph {
                     }
                     if (!nameDirectLogged) {
                         plugin.log("name sprite direct anchor flight enabled; source=(" + startX + "," + startY + ") target=("
-                                + destX + "," + destY + ") scale=" + destScale + " shift=" + C.NAME_TARGET_SHIFT_DP
+                                + destX + "," + destY + ") scale=" + destScale + " shift=" + (sp.shiftDp > 0.0 ? sp.shiftDp : C.NAME_TARGET_SHIFT_DP)
                                 + "dp pred=" + predictiveScale);
                         nameDirectLogged = true;
                     }
